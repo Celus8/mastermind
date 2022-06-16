@@ -1,14 +1,3 @@
-# 1st Version. Computer is codemaker and human is codebreaker. Computer
-# generates a random 4 digit number and player has to guess it. Human has 12
-# guesses. In each one he inputs a 4 digit number, and the terminal returns how
-# many were correct and in the correct place and how many were correct in the
-# incorrect place. If after guess 12 human hasn't guessed the code, he loses. If
-# at some point he guesses the code, he wins.
-
-# Computer is a class that generates the code. Player is a class that has
-# player actions. Game is a class that recieves input from player and computer,
-# and shows output.
-
 class Game
   attr_reader :code
 
