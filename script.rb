@@ -6,8 +6,8 @@ class Game
   end
 
   def play
-    puts 'Welcome to Mastermind! A 4 digit code will be generated, with numbers 1-9, both included. Inputting a 0 or text will terminate the program. Good luck!'
-    puts @code
+    puts 'Welcome to Mastermind! A 4 digit code will be generated, with numbers 1-9, both included. Inputting a 0 or text will terminate the program. You have 12 tries to guess the code. Good luck!'
+    tries = 12
     loop do
       guess = gets.chomp
       break if guess.to_i.zero?
@@ -19,8 +19,12 @@ class Game
         puts 'Incorrect input!'
         next
       end
-
-      puts "You have #{result[0]} correct digits in the correct place, and #{result[1]} correct digits in an incorrect place."
+      tries -= 1
+      puts "You have #{result[0]} correct digits in the correct place, and #{result[1]} correct digits in an incorrect place. You have #{tries} tries left."
+      if tries <= 0
+        puts 'You ran out of tries. You lose!'
+        break
+      end
     end
   end
 
@@ -37,7 +41,7 @@ class Game
       in_common += 1 if guess_array[i] == code_array[i]
       in_common
     end
-    white = (guess_array & code_array).length
+    white = (guess_array & code_array).length - red
     [red, white]
   end
 
