@@ -132,7 +132,7 @@ class Computer
     return @guess if @tries == 12
     
     change_guess
-    puts @guess
+    puts "The computer guesses: #{@guess}"
     @guess
   end
 
