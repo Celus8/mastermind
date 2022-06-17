@@ -12,7 +12,7 @@ end
 class Game
   include Checker
 
-  attr_reader :code, :guess, :code_maker, :code_guesser
+  attr_reader :code, :guess, :code_maker, :code_guesser, :tries
 
   def initialize
     puts 'Welcome to Mastermind! Enter "make" if you want to be the codemaker, or "guess" if you want to be the codeguesser. The computer will play the other role.'
@@ -36,15 +36,17 @@ class Game
 
   def play
     @code = code_maker.generate_code
-    tries = 12
+    code_guesser.get_code(self)
+    @tries = 12
     loop do
+      code_guesser.get_tries(self)
       @guess = code_guesser.make_guess
       break unless @guess
 
       result = check(guess)
       break if result == 'Win'
 
-      tries -= 1
+      @tries -= 1
       puts "#{code_guesser} #{result[0]} correct digits in the correct place, and #{result[1]} correct digits in an incorrect place. #{code_guesser} #{tries} tries left."
       if tries <= 0
         puts "#{code_guesser} ran out of tries. #{code_guesser} lost!"
@@ -53,6 +55,7 @@ class Game
       code_guesser.pause
     end
   end
+
   def check(player_guess)
     if player_guess == @code
       puts "#{code_guesser} won!"
@@ -64,13 +67,19 @@ class Game
       in_common += 1 if guess_array[i] == code_array[i]
       in_common
     end
-    white = (guess_array & code_array).length - red
+    white = ((guess_array & code_array).flat_map { |n| [n]*[guess_array.count(n), code_array.count(n)].min }).length - red
     [red, white]
   end
 end
 
 class Human
   include Checker
+
+  def get_code(game); end
+
+  def get_tries(game); end
+
+  def pause; end
 
   def generate_code
     loop do
@@ -82,6 +91,7 @@ class Human
       end
     end
   end
+
   def make_guess
     loop do
       provisional_guess = gets.chomp
@@ -95,25 +105,58 @@ class Human
       end
     end
   end
-  def pause
-  end
+
   def to_s
     'You have'
   end
 end
 
 class Computer
+  def initialize
+    @guess = [rand(1..9), rand(1..9), rand(1..9), rand(1..9)].join
+  end
+
+  def get_code(game)
+    @code = game.code
+  end
+
+  def get_tries(game)
+    @tries = game.tries
+  end
+
   def generate_code
     [rand(1..9), rand(1..9), rand(1..9), rand(1..9)].join
   end
+
   def make_guess
-    [rand(1..9), rand(1..9), rand(1..9), rand(1..9)].join
+    return @guess if @tries == 12
+
+    change_guess
+    @guess
   end
+
   def to_s
     'The computer has'
   end
-  def pause
-    sleep 2
+
+  def pause; end
+
+  def change_guess
+    in_common = []
+    modified_guess = Array.new(4, nil)
+    @guess.split('').each_with_index do |element, index|
+      if @code.split('')[index] == element
+        modified_guess[index] = element
+      elsif @code.split('').include?(element)
+        in_common.push(element) unless @code.split('').count(element) == modified_guess.count(element)
+      end
+    end
+    (0..3).each do |i|
+      if modified_guess[i].nil?
+        modified_guess[i] = (in_common.pop || rand(1..9).to_s)
+      end
+    end
+    @guess = modified_guess.join
   end
 end
 
