@@ -169,7 +169,10 @@ class Computer
         in_common.push(element) unless @code.split('').count(element) <= modified_guess.count(element)
       end
     end
-    (0..3).each do |i|
+    loop do
+      break unless modified_guess.any?(nil)
+      
+      i = rand(0..3)
       if modified_guess[i].nil?
         modified_guess[i] = (in_common.pop || rand(1..9).to_s)
       end
