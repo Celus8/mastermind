@@ -130,8 +130,9 @@ class Computer
 
   def make_guess
     return @guess if @tries == 12
-
+    
     change_guess
+    puts @guess
     @guess
   end
 
@@ -139,16 +140,31 @@ class Computer
     'The computer has'
   end
 
-  def pause; end
+  def pause
+    sleep 2
+  end
 
   def change_guess
-    in_common = []
     modified_guess = Array.new(4, nil)
+    modified_guess = add_reds(modified_guess)
+    modified_guess = add_whites(modified_guess)
+    @guess = modified_guess.join
+  end
+
+  def add_reds(modified_guess)
     @guess.split('').each_with_index do |element, index|
       if @code.split('')[index] == element
         modified_guess[index] = element
-      elsif @code.split('').include?(element)
-        in_common.push(element) unless @code.split('').count(element) == modified_guess.count(element)
+      end
+    end
+    modified_guess
+  end
+
+  def add_whites(modified_guess)
+    in_common = []
+    @guess.split('').each_with_index do |element, index|
+      if @code.split('').include?(element)
+        in_common.push(element) unless @code.split('').count(element) <= modified_guess.count(element)
       end
     end
     (0..3).each do |i|
@@ -156,7 +172,7 @@ class Computer
         modified_guess[i] = (in_common.pop || rand(1..9).to_s)
       end
     end
-    @guess = modified_guess.join
+    modified_guess
   end
 end
 
