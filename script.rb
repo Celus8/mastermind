@@ -129,8 +129,10 @@ class Computer
   end
 
   def make_guess
-    return @guess if @tries == 12
-    
+    if @tries == 12
+      puts "The computer guesses: #{@guess}"
+      return @guess
+    end
     change_guess
     puts "The computer guesses: #{@guess}"
     @guess
